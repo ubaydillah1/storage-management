@@ -1,26 +1,100 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-sans: var(--font-poppins), sans-serif;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --text-h1: 2.125rem;
+  --text-h2: 1.5rem;
+  --text-h3: 1.25rem;
+  --text-h4: 1.125rem;
+  --text-h5: 1rem;
+  --text-subtitle1: 1rem;
+  --text-subtitle2: 0.875rem;
+  --text-body1: 1rem;
+  --text-body2: 0.875rem;
+  --text-button: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-overline: 0.625rem;
+
+  --leading-h1: 2.625rem;
+  --leading-h2: 2.25rem;
+  --leading-h3: 1.75rem;
+  --leading-h4: 1.25rem;
+  --leading-h5: 1.5rem;
+  --leading-subtitle1: 1.5rem;
+  --leading-subtitle2: 1.25rem;
+  --leading-body1: 1.5rem;
+  --leading-body2: 1.25rem;
+  --leading-button: 1.25rem;
+  --leading-caption: 1rem;
+  --leading-overline: 0.875rem;
+
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+  --color-primary: #56b8ff;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #a3b2c7;
+  --color-secondary-foreground: #000000;
+  --color-accent: #ff7474;
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #b80000;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #e5e7eb;
+  --color-input: #e5e7eb;
+  --color-ring: #9ca3af;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .heading-1 {
+    @apply text-h1 font-bold leading-h1;
+  }
+  .heading-2 {
+    @apply text-h2 font-bold leading-h2;
+  }
+  .heading-3 {
+    @apply text-h3 font-medium leading-h3;
+  }
+  .heading-4 {
+    @apply text-h4 font-medium leading-h4;
+  }
+  .heading-5 {
+    @apply text-h5 font-semibold leading-h5;
+  }
+  .subtitle-1 {
+    @apply text-subtitle1 font-medium leading-subtitle1;
+  }
+  .subtitle-2 {
+    @apply text-subtitle2 font-semibold leading-subtitle2;
+  }
+  .body-1 {
+    @apply text-body1 font-normal leading-body1;
+  }
+  .body-2 {
+    @apply text-body2 font-normal leading-body2;
+  }
+  .text-button {
+    @apply text-button font-medium leading-button;
+  }
+  .text-caption {
+    @apply text-caption font-normal leading-caption;
+  }
+  .text-overline {
+    @apply text-overline font-normal leading-overline uppercase tracking-wider;
+  }
+}
+
+@utility flex-center {
+  @apply flex justify-center items-center;
 }
