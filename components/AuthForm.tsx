@@ -14,15 +14,29 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useState } from "react";
+import Image from "next/image";
 
-const formSchema = z.object({
-  fullname: z.string().min(2).max(50),
-  email: z.string().email(),
-});
+type FormType = "sign-in" | "sign-up";
 
-type FormScheme = z.infer<typeof formSchema>;
+const authFormScheme = (formType: FormType) => {
+  return z.object({
+    email: z.string().email(),
+    fullname:
+      formType === "sign-up"
+        ? z.string().min(2).max(50)
+        : z.string().optional(),
+  });
+};
 
-const AuthForm = ({ type }: { type: "sign-in" | "sign-up" }) => {
+const AuthForm = ({ type }: { type: FormType }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const formSchema = authFormScheme(type);
+
+  type FormScheme = z.infer<typeof formSchema>;
+
   const form = useForm<FormScheme>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,7 +52,7 @@ const AuthForm = ({ type }: { type: "sign-in" | "sign-up" }) => {
   return (
     <div className="flex flex-1 justify-center items-center flex-col px-[24px]">
       <div className="max-w-[580px] w-full">
-        <h1 className="heading-1">
+        <h1 className="heading-1 ">
           {type === "sign-up" ? "Create Account" : "Login"}
         </h1>
         <Form {...form}>
@@ -59,7 +73,9 @@ const AuthForm = ({ type }: { type: "sign-in" | "sign-up" }) => {
                     name="fullname"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Full name</FormLabel>
+                        <FormLabel className="text-body2 md:text-body1">
+                          Full name
+                        </FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Your full name"
@@ -144,7 +160,9 @@ const AuthForm = ({ type }: { type: "sign-in" | "sign-up" }) => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel className="text-body2 md:text-body1">
+                        Email
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Your email"
@@ -175,13 +193,32 @@ const AuthForm = ({ type }: { type: "sign-in" | "sign-up" }) => {
               </div>
             )}
 
-            <Button type="submit" className="w-full py-6 rounded-[12px]">
+            <Button
+              type="submit"
+              className="w-full py-6 rounded-[12px]"
+              disabled={isLoading}
+            >
               Submit
+              {isLoading && (
+                <Image
+                  src="/assets/icons/loader.svg"
+                  alt="Loader"
+                  width={18}
+                  height={18}
+                  className="animate-spin"
+                />
+              )}
             </Button>
+
+            {errorMessage && (
+              <p className="text-destructive text-center text-[14px]">
+                {errorMessage}
+              </p>
+            )}
           </form>
         </Form>
 
-        <p className="my-5 text-center">
+        <p className="my-5 text-center text-body2 md:text-body1">
           {type === "sign-in"
             ? "Don't have an account?"
             : "Already have an account?"}{" "}
