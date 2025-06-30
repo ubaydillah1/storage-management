@@ -7,7 +7,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <div className="bg-primary text-primary-foreground max-w-[580px] px-14 pt-12 pb-16 lg:flex flex-col justify-between hidden">
         <div className="flex items-center gap-2">
           <Image
-            src="/logo.png"
+            src="/assets/images/logo.png"
             alt="logo"
             width={100}
             height={100}
@@ -25,7 +25,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
 
         <Image
-          src="/assets/illustration.png"
+          src="/assets/images/files.png"
           alt="file"
           width={310}
           height={310}
