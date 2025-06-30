@@ -30,8 +30,8 @@ const authFormScheme = (formType: FormType) => {
 };
 
 const AuthForm = ({ type }: { type: FormType }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isLoading] = useState<boolean>(false);
+  const [errorMessage] = useState<string>("");
 
   const formSchema = authFormScheme(type);
 
