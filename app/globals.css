@@ -49,10 +49,10 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border scroll-smooth;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans min-h-screen;
   }
 }
 
@@ -92,6 +92,11 @@
   }
   .text-overline {
     @apply text-overline font-normal leading-overline uppercase tracking-wider;
+  }
+
+  /* Override ShadCN */
+  .shad-cn-button {
+    @apply w-full py-6 rounded-[12px] h-[50px];
   }
 }
 

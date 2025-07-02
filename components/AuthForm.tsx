@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
+import { createAccount } from "@/lib/actions/user.actions";
+import OTPModal from "./OTPModal";
 
 type FormType = "sign-in" | "sign-up";
 
@@ -30,8 +32,9 @@ const authFormScheme = (formType: FormType) => {
 };
 
 const AuthForm = ({ type }: { type: FormType }) => {
-  const [isLoading] = useState<boolean>(false);
-  const [errorMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [accountId, setAccountId] = useState<string>("");
 
   const formSchema = authFormScheme(type);
 
@@ -45,14 +48,30 @@ const AuthForm = ({ type }: { type: FormType }) => {
     },
   });
 
-  function onSubmit(values: FormScheme) {
+  const onSubmit = async (values: FormScheme) => {
+    setIsLoading(true);
+    setErrorMessage("");
+
     console.log(values);
-  }
+
+    try {
+      const user = await createAccount({
+        fullName: values.fullname || "",
+        email: values.email,
+      });
+
+      setAccountId(user.accountId);
+    } catch {
+      setErrorMessage("Failed to create account");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-1 justify-center items-center flex-col px-[24px]">
       <div className="max-w-[580px] w-full">
-        <h1 className="heading-1 ">
+        <h1 className="heading-1">
           {type === "sign-up" ? "Create Account" : "Login"}
         </h1>
         <Form {...form}>
@@ -234,7 +253,9 @@ const AuthForm = ({ type }: { type: FormType }) => {
         </p>
       </div>
 
-      {/* OTP Verification */}
+      {accountId && (
+        <OTPModal email={form.getValues("email")} accountId={accountId} />
+      )}
     </div>
   );
 };
