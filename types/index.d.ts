@@ -72,3 +72,16 @@ interface ShareInputProps {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemove: (email: string) => void;
 }
+
+type CategoryUsage = {
+  size: number;
+  latestDate: number;
+};
+
+type TotalSpace = {
+  document: CategoryUsage;
+  image: CategoryUsage;
+  video: CategoryUsage;
+  audio: CategoryUsage;
+  other: CategoryUsage;
+};
