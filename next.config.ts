@@ -7,11 +7,23 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    domains: [
-      "upload.wikimedia.org",
-      "images.unsplash.com",
-      "res.cloudinary.com",
-      "img.freepik.com",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "upload.wikimedia.org",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "https",
+        hostname: "img.freepik.com",
+      },
     ],
   },
 };
