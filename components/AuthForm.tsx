@@ -15,9 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useState } from "react";
-import Image from "next/image";
-import { createAccount } from "@/lib/actions/user.actions";
+import { createAccount, signInUser } from "@/lib/actions/user.actions";
 import OTPModal from "./OTPModal";
+import { LoaderCircle } from "lucide-react";
 
 type FormType = "sign-in" | "sign-up";
 
@@ -26,7 +26,7 @@ const authFormScheme = (formType: FormType) => {
     email: z.string().email(),
     fullname:
       formType === "sign-up"
-        ? z.string().min(2).max(50)
+        ? z.string().min(3).max(20)
         : z.string().optional(),
   });
 };
@@ -35,6 +35,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [accountId, setAccountId] = useState<string>("");
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   const formSchema = authFormScheme(type);
 
@@ -51,16 +52,24 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const onSubmit = async (values: FormScheme) => {
     setIsLoading(true);
     setErrorMessage("");
-
     console.log(values);
 
     try {
-      const user = await createAccount({
-        fullName: values.fullname || "",
-        email: values.email,
-      });
+      const user =
+        type === "sign-up"
+          ? await createAccount({
+              fullName: values.fullname || "",
+              email: values.email,
+            })
+          : await signInUser({ email: values.email });
+
+      if (user.error) {
+        setErrorMessage(user.error);
+        return;
+      }
 
       setAccountId(user.accountId);
+      setShowOtpModal(true);
     } catch {
       setErrorMessage("Failed to create account");
     } finally {
@@ -218,15 +227,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
               disabled={isLoading}
             >
               Submit
-              {isLoading && (
-                <Image
-                  src="/assets/icons/loader.svg"
-                  alt="Loader"
-                  width={18}
-                  height={18}
-                  className="animate-spin"
-                />
-              )}
+              {isLoading && <LoaderCircle size={20} className="animate-spin" />}
             </Button>
 
             {errorMessage && (
@@ -253,8 +254,12 @@ const AuthForm = ({ type }: { type: FormType }) => {
         </p>
       </div>
 
-      {accountId && (
-        <OTPModal email={form.getValues("email")} accountId={accountId} />
+      {showOtpModal && accountId && (
+        <OTPModal
+          email={form.getValues("email")}
+          accountId={accountId}
+          onClose={() => setShowOtpModal(false)}
+        />
       )}
     </div>
   );

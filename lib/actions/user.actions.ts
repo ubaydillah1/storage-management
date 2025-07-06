@@ -1,10 +1,12 @@
 "use server";
 
 import { ID, Query } from "node-appwrite";
-import { createAdminClient } from "../appwrite";
+import { createAdminClient, createSessionClient } from "../appwrite";
 import { appwriteConfig } from "../appwrite/config";
 import { parseStringify } from "../utils";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { avatarPlaceholderUrl } from "@/constants";
 
 const getUserByEmail = async (email: string) => {
   const { databases } = await createAdminClient();
@@ -42,30 +44,28 @@ export const createAccount = async ({
   fullName: string;
   email: string;
 }) => {
-  console.log("Masuk");
   const existingUser = await getUserByEmail(email);
-  const accountId = await sendEmailOTP(email);
 
-  console.log(existingUser);
-  console.log(accountId);
+  if (existingUser) {
+    return { error: "An account with this email already exists." };
+  }
+
+  const accountId = await sendEmailOTP(email);
 
   if (!accountId) throw new Error("Failed to send OTP");
 
-  if (!existingUser) {
-    const { databases } = await createAdminClient();
-    await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      ID.unique(),
-      {
-        email,
-        fullName,
-        avatar:
-          "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
-        accountId,
-      }
-    );
-  }
+  const { databases } = await createAdminClient();
+  await databases.createDocument(
+    appwriteConfig.databaseId,
+    appwriteConfig.userCollectionId,
+    ID.unique(),
+    {
+      email,
+      fullName,
+      avatar: avatarPlaceholderUrl,
+      accountId,
+    }
+  );
 
   return parseStringify({ accountId });
 };
@@ -92,5 +92,49 @@ export const verifyOtp = async ({
     return parseStringify({ sessionId: session.$id });
   } catch (error) {
     handleError(error, "Error verifying OTP");
+  }
+};
+
+export const getCurrentUser = async () => {
+  const { databases, account } = await createSessionClient();
+
+  const result = await account.get();
+
+  const user = await databases.listDocuments(
+    appwriteConfig.databaseId,
+    appwriteConfig.userCollectionId,
+    [Query.equal("accountId", result.$id)]
+  );
+
+  if (user.total <= 0) return null;
+
+  return parseStringify(user.documents[0]);
+};
+
+export const signOutUser = async () => {
+  const { account } = await createSessionClient();
+
+  try {
+    await account.deleteSession("current");
+    (await cookies()).delete("appwrite-session");
+  } catch (e) {
+    handleError(e, "Error signing out user");
+  } finally {
+    redirect("/sign-in");
+  }
+};
+
+export const signInUser = async ({ email }: { email: string }) => {
+  try {
+    const existingUser = await getUserByEmail(email);
+
+    if (existingUser) {
+      await sendEmailOTP(email);
+      return parseStringify({ accountId: existingUser.accountId });
+    }
+
+    return parseStringify({ accountId: null, error: "User not found" });
+  } catch (error) {
+    handleError(error, "Failed to sign in user");
   }
 };

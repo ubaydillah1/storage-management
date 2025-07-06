@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex min-h-screen">
       <div className="bg-primary text-primary-foreground max-w-[580px] px-14 pt-12 pb-16 lg:flex flex-col justify-between hidden">
