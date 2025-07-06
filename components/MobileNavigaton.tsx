@@ -16,9 +16,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import FileUploader from "./FileUploader";
 
 interface Props {
-  ownerId: string;
+  $id: string;
   accountId: string;
   fullName: string;
   avatar: string;
@@ -26,7 +27,7 @@ interface Props {
 }
 
 const MobileNavigaton = ({
-  ownerId,
+  $id: ownerId,
   accountId,
   fullName,
   avatar,
@@ -107,7 +108,9 @@ const MobileNavigaton = ({
               </ul>
             </nav>
 
-            <div>File Uploader</div>
+            <div>
+              <FileUploader ownerId={ownerId} accountId={accountId} />
+            </div>
             <Button className="mt-[20px] w-full flex gap-3 cursor-pointer">
               <LogOut size={24} onClick={async () => await signOutUser()} />
               Logout

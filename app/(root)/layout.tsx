@@ -13,7 +13,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
       <section className="w-full">
         <div>
           <MobileNavigaton {...currentUser} />
-          <Header />
+          <Header userId={currentUser.$id} accountId={currentUser.accountId} />
         </div>
         <div className="h-screen">{children}</div>
       </section>
